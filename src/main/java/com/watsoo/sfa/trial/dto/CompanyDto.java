@@ -85,4 +85,18 @@ public class CompanyDto {
 		this.createdBy = createdBy;
 	}
 
+	public CompanyDto(Long id, String name, String shortName, String headerLogo, String printLogo, String details,
+			Boolean isActive, Date createdOn, Long createdBy) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.shortName = shortName;
+		this.headerLogo = headerLogo;
+		this.printLogo = printLogo;
+		this.details = details;
+		this.isActive = isActive;
+		this.createdOn = createdOn;
+		this.createdBy = createdBy;
+	}
+
 }
