@@ -1,5 +1,7 @@
 package com.watsoo.sfa.trial.dto;
 
+import java.util.List;
+
 public class LoginResponseDto {
 
 	private Long userId;
@@ -10,7 +12,7 @@ public class LoginResponseDto {
 	private String userPhotoPath;
 	private Long companyId;
 	private CompanyDto company;
-	private AppVersionsDto appVersions;
+	private List<AppVersionsDto> appVersions;
 	private String attendnaceCheck;
 	private SiteDto primarySite;
 	private SiteDto navigateToSite;
@@ -20,7 +22,7 @@ public class LoginResponseDto {
 	private Long designationId;
 	private TypeDto type;
 	private String onBoardUserResponse;
-	private ReimburmentDto reimbursmentConfig;
+	private List<ReimburmentDto> reimbursmentConfig;
 	private EmployeeConfig employeeConfig;
 	private Object siteConfig;
 	private Object siteAddressDTOList;
@@ -94,11 +96,11 @@ public class LoginResponseDto {
 		this.company = company;
 	}
 
-	public AppVersionsDto getAppVersions() {
+	public List<AppVersionsDto> getAppVersions() {
 		return appVersions;
 	}
 
-	public void setAppVersions(AppVersionsDto appVersions) {
+	public void setAppVersions(List<AppVersionsDto> appVersions) {
 		this.appVersions = appVersions;
 	}
 
@@ -174,11 +176,11 @@ public class LoginResponseDto {
 		this.onBoardUserResponse = onBoardUserResponse;
 	}
 
-	public ReimburmentDto getReimbursmentConfig() {
+	public List<ReimburmentDto> getReimbursmentConfig() {
 		return reimbursmentConfig;
 	}
 
-	public void setReimbursmentConfig(ReimburmentDto reimbursmentConfig) {
+	public void setReimbursmentConfig(List<ReimburmentDto> reimbursmentConfig) {
 		this.reimbursmentConfig = reimbursmentConfig;
 	}
 
@@ -207,10 +209,10 @@ public class LoginResponseDto {
 	}
 
 	public LoginResponseDto(Long userId, String token, String username, String emailId, String gender,
-			String userPhotoPath, Long companyId, CompanyDto company, AppVersionsDto appVersions,
+			String userPhotoPath, Long companyId, CompanyDto company, List<AppVersionsDto> appVersions,
 			String attendnaceCheck, SiteDto primarySite, SiteDto navigateToSite, Boolean trialExpire,
 			Boolean isTrialCompany, Long departmentId, Long designationId, TypeDto type, String onBoardUserResponse,
-			ReimburmentDto reimbursmentConfig, EmployeeConfig employeeConfig, Object siteConfig,
+			List<ReimburmentDto> reimbursmentConfig, EmployeeConfig employeeConfig, Object siteConfig,
 			Object siteAddressDTOList) {
 		super();
 		this.userId = userId;

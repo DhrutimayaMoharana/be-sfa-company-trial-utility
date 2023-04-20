@@ -39,7 +39,7 @@ public class TrialUserDetails {
 	private Boolean isActive;
 
 	@Column(name = "user_type")
-	private UserType userType;
+	private String userType;
 
 	@ManyToOne
 	@JoinColumn(name = "created_by")
@@ -104,11 +104,11 @@ public class TrialUserDetails {
 		this.isActive = isActive;
 	}
 
-	public UserType getUserType() {
+	public String getUserType() {
 		return userType;
 	}
 
-	public void setUserType(UserType userType) {
+	public void setUserType(String userType) {
 		this.userType = userType;
 	}
 
@@ -152,7 +152,7 @@ public class TrialUserDetails {
 		this.companyId = companyId;
 	}
 
-	public TrialUserDetails(Long id, String name, String email, String password, Boolean isActive, UserType userType,
+	public TrialUserDetails(Long id, String name, String email, String password, Boolean isActive, String userType,
 			UserData createdBy, Date createdOn, Long updatedBy, Date updatedOn, TrialCompany companyId) {
 		super();
 		this.id = id;
@@ -169,9 +169,9 @@ public class TrialUserDetails {
 	}
 
 	public TrialsUserDetailsDto convertToTrailsUserDto(List<TrialUserDetails> trialUserDetails) {
-		List<String> userEmailList = trialUserDetails.stream().filter(e -> e.getUserType().equals(UserType.USER))
+		List<String> userEmailList = trialUserDetails.stream().filter(e -> e.getUserType().equals(UserType.USER.name()))
 				.map(e -> e.getEmail()).collect(Collectors.toList());
-		List<String> adminEmal = trialUserDetails.stream().filter(e -> e.getUserType().equals(UserType.ADMIN))
+		List<String> adminEmal = trialUserDetails.stream().filter(e -> e.getUserType().equals(UserType.ADMIN.name()))
 				.map(e -> e.getEmail()).collect(Collectors.toList());
 		String[] userEmail = userEmailList.stream().toArray(String[]::new);
 		return new TrialsUserDetailsDto(null, trialUserDetails.get(0).getName(), adminEmal.get(0), userEmail,

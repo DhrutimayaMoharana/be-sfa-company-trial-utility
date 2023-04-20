@@ -126,13 +126,13 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 
 				trialUserDetailListForSave
 						.add(new TrialUserDetails(null, "admin", companyDto.getTrialsUserDetailsDto().getAdminEmail(),
-								null, true, UserType.ADMIN, new UserData(companyDto.getCreatedBy().getId()), new Date(),
-								null, null, new TrialCompany(companySaveResponse.getId())));
+								null, true, UserType.ADMIN.name(), new UserData(companyDto.getCreatedBy().getId()),
+								new Date(), null, null, new TrialCompany(companySaveResponse.getId())));
 
 				for (String userEmail : companyDto.getTrialsUserDetailsDto().getUserEmail()) {
 					trialUserDetailListForSave.add(new TrialUserDetails(null, "user", userEmail, null, true,
-							UserType.USER, new UserData(companyDto.getCreatedBy().getId()), new Date(), null, null,
-							new TrialCompany(companySaveResponse.getId())));
+							UserType.USER.name(), new UserData(companyDto.getCreatedBy().getId()), new Date(), null,
+							null, new TrialCompany(companySaveResponse.getId())));
 				}
 
 				trialUserDetailsRepository.saveAll(trialUserDetailListForSave);
@@ -200,7 +200,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 				List<TrialUserDetails> trialUserDetailListUpdate = new ArrayList<>();
 
 				for (TrialUserDetails trialUserDetails : companyById.get().getTrialUserDetails()) {
-					if (trialUserDetails.getUserType().equals(UserType.ADMIN)) {
+					if (trialUserDetails.getUserType().equals(UserType.ADMIN.name())) {
 						trialUserDetails.setPassword(adminPassword);
 					} else {
 						trialUserDetails.setPassword(userPassword);
@@ -309,7 +309,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 			sb.append("<tr>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>" + i + "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
-					+ trialUserDetails.getUserType().name() + "</td>");
+					+ trialUserDetails.getUserType() + "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
 					+ trialUserDetails.getEmail() + "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"

@@ -13,10 +13,13 @@ import com.watsoo.sfa.trial.dto.CompanyDto;
 import com.watsoo.sfa.trial.dto.LoginRequestDto;
 import com.watsoo.sfa.trial.dto.LoginResponseDto;
 import com.watsoo.sfa.trial.dto.Response;
+import com.watsoo.sfa.trial.dto.TrialUserPermissionDto;
 import com.watsoo.sfa.trial.dto.UserDataDto;
 import com.watsoo.sfa.trial.dto.UserPermissionDto;
+import com.watsoo.sfa.trial.model.Transaction;
 import com.watsoo.sfa.trial.model.TrialUserDetails;
 import com.watsoo.sfa.trial.model.UserData;
+import com.watsoo.sfa.trial.repository.TransactionRepository;
 import com.watsoo.sfa.trial.repository.TrialUserDetailsRepository;
 import com.watsoo.sfa.trial.service.TrialUserDetailsService;
 
@@ -25,6 +28,9 @@ public class TrialUserDetailsServiceImpl implements TrialUserDetailsService {
 
 	@Autowired
 	private TrialUserDetailsRepository trialUserDetailsRepository;
+
+	@Autowired
+	private TransactionRepository transactionRepository;
 
 	@Override
 	public LoginResponseDto trialUserLogin(LoginRequestDto loginRequestDto) {
@@ -35,6 +41,10 @@ public class TrialUserDetailsServiceImpl implements TrialUserDetailsService {
 			if (userData != null) {
 				if (userData.getPassword() != null && !userData.getPassword().isEmpty()
 						&& userData.getPassword().equals(loginRequestDto.getPassword())) {
+
+//					Transaction transaction = transactionRepository
+//							.findByCompanyIdAndIsAcive(userData.getCompanyId().getId(), true);
+
 					LoginResponseDto loginResponseDto = new LoginResponseDto(userData.getId(), null, userData.getName(),
 							userData.getEmail(), null, null, userData.getCompanyId().getId(),
 							new CompanyDto(userData.getCompanyId().getId(),
@@ -60,10 +70,8 @@ public class TrialUserDetailsServiceImpl implements TrialUserDetailsService {
 
 		Optional<TrialUserDetails> findByTrialUsed = trialUserDetailsRepository.findById(id);
 
-		Long[] companyIds = {
-				findByTrialUsed.get().getCompanyId() != null ? findByTrialUsed.get().getCompanyId().getId() : null };
-
-		UserPermissionDto userPermissionDto = new UserPermissionDto(Arrays.asList(companyIds));
+		TrialUserPermissionDto userPermissionDto = new TrialUserPermissionDto(
+				findByTrialUsed.get().getCompanyId().getId());
 
 		return new Response<>(HttpStatus.OK.value(), "Success", userPermissionDto);
 
