@@ -67,7 +67,7 @@ public class UserDataServiceImpl implements UserDataService {
 					UserData userUpdate = userData.get();
 					userUpdate.setPassword(userDataDto.getNewPassword());
 					userUpdate = userDataRepository.save(userUpdate);
-					return new Response<>(HttpStatus.OK.value(), "Password Changed Succefully", userDataDto);
+					return new Response<>(HttpStatus.OK.value(), "Password Changed Succefully", userUpdate);
 				} else {
 					return new Response<>(HttpStatus.BAD_REQUEST.value(), "Userdata not found", null);
 				}
