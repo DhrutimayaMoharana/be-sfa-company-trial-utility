@@ -174,10 +174,13 @@ public class TrialUserDetails {
 		List<String> adminEmal = trialUserDetails.stream().filter(e -> e.getUserType().equals(UserType.ADMIN.name()))
 				.map(e -> e.getEmail()).collect(Collectors.toList());
 		String[] userEmail = userEmailList.stream().toArray(String[]::new);
-		return new TrialsUserDetailsDto(null, trialUserDetails.get(0).getName(), adminEmal.get(0), userEmail,
-				trialUserDetails.get(0).getIsActive(), trialUserDetails.get(0).getCreatedBy().convertToUserDataDto(),
-				trialUserDetails.get(0).getCreatedOn(), trialUserDetails.get(0).getUpdatedBy(),
-				trialUserDetails.get(0).getUpdatedOn());
+		return new TrialsUserDetailsDto(null, trialUserDetails.size() > 0 ? trialUserDetails.get(0).getName() : null,
+				trialUserDetails.size() > 0 ? adminEmal.get(0) : null, userEmail,
+				trialUserDetails.size() > 0 ? trialUserDetails.get(0).getIsActive() : null,
+				trialUserDetails.size() > 0 ? trialUserDetails.get(0).getCreatedBy().convertToUserDataDto() : null,
+				trialUserDetails.size() > 0 ? trialUserDetails.get(0).getCreatedOn() : null,
+				trialUserDetails.size() > 0 ? trialUserDetails.get(0).getUpdatedBy() : null,
+				trialUserDetails.size() > 0 ? trialUserDetails.get(0).getUpdatedOn() : null);
 	}
 
 }

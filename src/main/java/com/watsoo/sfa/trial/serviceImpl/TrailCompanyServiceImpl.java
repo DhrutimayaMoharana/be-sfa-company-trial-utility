@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.watsoo.sfa.trial.dto.TrialCompanyDto;
+import com.watsoo.sfa.trial.dto.TrialCompanyRequestDto;
+import com.watsoo.sfa.trial.dto.CompanyDto;
 import com.watsoo.sfa.trial.dto.Response;
 import com.watsoo.sfa.trial.dto.SendEmailRequest;
 import com.watsoo.sfa.trial.enums.UserType;
@@ -189,6 +191,17 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 							"Admin email or User email is already used by other company", null);
 				}
 
+				List<TrialCompany> allCompanyByUsedBy = companyRepository
+						.getAllByUsedBy(companyDto.getUsedBy() != null && companyDto.getUsedBy().getId() != null
+								? companyDto.getUsedBy().getId()
+								: null);
+				Configuration getMinimumFreeTrialCompany = configurationRepository
+						.findByConfigurationKey("MIN_FREE_TRIAL_COMPANY");
+				if (allCompanyByUsedBy.size() >= Integer.parseInt(getMinimumFreeTrialCompany.getValue())) {
+					return new Response<>(HttpStatus.BAD_REQUEST.value(),
+							"You are not allow to use more trial company.");
+				}
+
 				String adminPassword = GenerateRandomCode.randomString(8);
 				String userPassword = GenerateRandomCode.randomString(8);
 				companyUpdate.setUsedBy(new UserData(companyDto.getUsedBy().getId()));
@@ -205,6 +218,8 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 					} else {
 						trialUserDetails.setPassword(userPassword);
 					}
+					trialUserDetails.setUpdatedBy(companyDto.getUpdatedBy());
+					trialUserDetails.setUpdatedOn(new Date());
 					trialUserDetailListUpdate.add(trialUserDetails);
 					firstPartOfToken = firstPartOfToken + trialUserDetails.getEmail() + "||"
 							+ trialUserDetails.getPassword() + "||";
@@ -292,13 +307,15 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 
 		SendEmailRequest emailRequest = new SendEmailRequest();
 		emailRequest.setToEmailIds(toEmails);
-		emailRequest.setSubject("Credential set for trial");
+		emailRequest.setSubject("Thank you for Showing Your Interest in NYGGS SFA!");
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><body>");
+		sb.append("<h1>Thank You! You Free Trial Credentials are Here!</h1>");
 		sb.append("<p>Dear " + transaction.getCompanyName() + " ,</p>"
-				+ "<p>This mail is to inform you that the trial credentials are set for you, " + "<br>"
-				+ "Kindly use the credentials that are provided below.</p>");
+				+ "<p>Thank you for showing your interest in NYGGS SFA! We are excited you are considering our platform for your business needs."
+				+ "<br>"
+				+ "To get you started with the free trial period, we have provided you with the following trial user/admin credentials:</p>");
 		sb.append("<table style='border: 2px solid black;'>");
 		sb.append(
 				"<tr><th style='padding:10px; text-align:center; border: 2px solid black; '>SL. NO.</th><th style='padding:10px; text-align:center; border: 2px solid black; '>User Type</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Email</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Password</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Expiry On</th></tr>");
@@ -321,15 +338,201 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 		}
 
 		sb.append("</table>");
-		sb.append("<p>Please click on the given link to -----------------</p>");
-		sb.append("<p>Please let us know if you have any questions or concerns regarding this." + "<br>"
-				+ "Thank you for showing your intrest. \n" + "<br>"
-				+ "We look forward to see the successful of this deal.</p>");
+		sb.append(
+				"<p>We encourage you to take a few moments to explore the platform and get familiar with its features. If you have any questions or need assistance, please don’t hesitate to reach out to our support team.</p>");
+		sb.append("<p>We look forward to working with you!" + "</p>" + "<p>Sincerely," + "<br>" + "Team NYGGS.</p>");
 		sb.append("</body></html>");
 
 		emailRequest.setContent(sb.toString());
 		emailService.sendMail(emailRequest);
 
+	}
+
+	@Override
+	public Response<?> addTrialCompanyV1(TrialCompanyRequestDto companyDto) {
+		try {
+			if (companyDto.getNoOfUsers() == null || companyDto.getNoOfUsers() == 0) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide no. of users.");
+			}
+			if (companyDto.getCreatedBy() == null || companyDto.getCreatedBy() == 0) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide createdBy.");
+			}
+			if (companyDto.getUsedBy() == null || companyDto.getUsedBy() == 0) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide useddBy.");
+			}
+			if (companyDto.getClientName() == null || companyDto.getClientName().isEmpty()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid client name.");
+			}
+			if (companyDto.getClientEmail() == null || companyDto.getClientEmail().isEmpty()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid client email.");
+			}
+			List<TrialCompany> allCompanyByUsedBy = companyRepository.getAllByUsedBy(companyDto.getUsedBy());
+			Configuration getMinimumFreeTrialCompany = configurationRepository
+					.findByConfigurationKey("MIN_FREE_TRIAL_COMPANY");
+			if (allCompanyByUsedBy.size() >= Integer.parseInt(getMinimumFreeTrialCompany.getValue())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "You are not allow to use more trial company.");
+			}
+			Configuration getMinimumTrailUser = configurationRepository.findByConfigurationKey("MIN_TRIAL_USER");
+			if (companyDto.getNoOfUsers() > Integer.parseInt(getMinimumTrailUser.getValue())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Max 5 users allow for trial.");
+			}
+
+			Long countCompany = companyRepository.count();
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+			TrialCompany companyToSave = new TrialCompany();
+
+			companyToSave.setCompanyIdentifier("TRCMP" + (countCompany + 1));
+			companyToSave.setCreatedBy(new UserData(companyDto.getCreatedBy()));
+			companyToSave.setUsedBy(new UserData(companyDto.getUsedBy()));
+			companyToSave.setIsActive(true);
+
+			if (companyDto.getExpiryDate() == null) {
+
+				Configuration minimumExpiryDay = configurationRepository.findByConfigurationKey("TRIAL_EXPIRY_DAY");
+				Date todayDate = new Date();
+				Calendar cal = Calendar.getInstance();
+				try {
+					cal.setTime(dateFormat.parse(dateFormat.format(todayDate)));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				cal.add(Calendar.DAY_OF_MONTH, Integer.parseInt(minimumExpiryDay.getValue()));
+				companyToSave.setExpiryDate(dateFormat.parse(dateFormat.format(cal.getTime())));
+
+			} else {
+				if (companyDto.getExpiryDate().getTime() < dateFormat.parse(dateFormat.format(new Date())).getTime()) {
+					return new Response<>(HttpStatus.BAD_REQUEST.value(), "The expiration date cannot be a past date",
+							null);
+				}
+
+				companyToSave.setExpiryDate(companyDto.getExpiryDate());
+			}
+
+			companyToSave.setCreatedOn(new Date());
+
+			List<TrialUserDetails> trialUserDetailListForSave = new ArrayList<>();
+
+			String adminEmail = companyToSave.getCompanyIdentifier().toLowerCase() + "adm1@watsoo.com";
+			String adminName = (companyToSave.getCompanyIdentifier() + "adm1").toUpperCase();
+
+			String firstPartOfToken = "";
+			String adminPassword = GenerateRandomCode.randomString(8);
+			String userPassword = GenerateRandomCode.randomString(8);
+
+			trialUserDetailListForSave.add(new TrialUserDetails(null, adminName, adminEmail, adminPassword, true,
+					UserType.ADMIN.name(), new UserData(companyDto.getCreatedBy()), new Date(), null, null, null));
+
+			firstPartOfToken = firstPartOfToken + adminEmail + "||" + adminPassword + "||";
+
+			String userEmail = companyToSave.getCompanyIdentifier().toLowerCase() + "usr";
+			String userName = (companyToSave.getCompanyIdentifier() + "usr").toUpperCase();
+
+			for (int i = 1; i <= companyDto.getNoOfUsers(); i++) {
+				TrialUserDetails userDetails = new TrialUserDetails(null, userName + i, userEmail + i + "@watsoo.com",
+						userPassword, true, UserType.USER.name(), new UserData(companyDto.getCreatedBy()), new Date(),
+						null, null, null);
+
+				firstPartOfToken = firstPartOfToken + userEmail + i + "@watsoo.com" + "||" + userPassword + "||";
+
+				trialUserDetailListForSave.add(userDetails);
+			}
+
+			String token = firstPartOfToken + companyToSave.getExpiryDate().getTime();
+
+			companyToSave.setToken(Base64.getEncoder().encodeToString(token.getBytes()));
+
+			TrialCompanyDto companySaveResponseDto = companyRepository.save(companyToSave).convertToCompanyDto();
+
+			for (TrialUserDetails trialUserDetails : trialUserDetailListForSave) {
+				trialUserDetails.setCompanyId(new TrialCompany(companySaveResponseDto.getId()));
+			}
+
+			Transaction transaction = new Transaction(null, new TrialCompany(companySaveResponseDto.getId()),
+					companyDto.getCreatedBy() != null ? new UserData(companyDto.getCreatedBy()) : new UserData(1L),
+					dateFormat.parse(dateFormat.format(new Date())), companySaveResponseDto.getExpiryDate(),
+					companyDto.getClientName(), companyDto.getClientEmail(), true);
+
+			transactionService.transactionAdd(transaction);
+
+			trialUserDetailsRepository.saveAll(trialUserDetailListForSave);
+
+			trialCredentialSet(companyToSave, transaction, trialUserDetailListForSave);
+
+			return new Response<>(HttpStatus.CREATED.value(), "Trial company created and assign succefully",
+					companySaveResponseDto);
+
+		} catch (Exception e) {
+			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+		}
+	}
+
+	@Override
+	public Response<?> addTrialCompanyV2(TrialCompanyRequestDto companyDto) {
+		try {
+			if (companyDto.getNoOfUsers() == null || companyDto.getNoOfUsers() == 0) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide no. of users.");
+			}
+			if (companyDto.getCreatedBy() == null || companyDto.getCreatedBy() == 0) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide createdBy.");
+			}
+
+			List<TrialCompany> allCompanyByCreatedBy = companyRepository.getAllByCreatedBy(companyDto.getCreatedBy());
+			Configuration getMinimumFreeTrialCompany = configurationRepository
+					.findByConfigurationKey("MIN_FREE_TRIAL_COMPANY");
+			if (allCompanyByCreatedBy.size() >= Integer.parseInt(getMinimumFreeTrialCompany.getValue())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(),
+						"You are not allow to create more trial company.");
+			}
+			Configuration getMinimumTrailUser = configurationRepository.findByConfigurationKey("MIN_TRIAL_USER");
+			if (companyDto.getNoOfUsers() > Integer.parseInt(getMinimumTrailUser.getValue())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Max 5 users allow for trial.");
+			}
+
+			Long countCompany = companyRepository.count();
+
+			TrialCompany companyToSave = new TrialCompany();
+
+			companyToSave.setCompanyIdentifier("TRCMP" + (countCompany + 1));
+			companyToSave.setCreatedBy(new UserData(companyDto.getCreatedBy()));
+			companyToSave.setIsActive(true);
+
+			companyToSave.setCreatedOn(new Date());
+
+			List<TrialUserDetails> trialUserDetailListForSave = new ArrayList<>();
+
+			String adminEmail = companyToSave.getCompanyIdentifier().toLowerCase() + "adm1@watsoo.com";
+			String adminName = (companyToSave.getCompanyIdentifier() + "adm1").toUpperCase();
+
+			trialUserDetailListForSave.add(new TrialUserDetails(null, adminName, adminEmail, null, true,
+					UserType.ADMIN.name(), new UserData(companyDto.getCreatedBy()), new Date(), null, null, null));
+
+			String userEmail = companyToSave.getCompanyIdentifier().toLowerCase() + "usr";
+			String userName = (companyToSave.getCompanyIdentifier() + "usr").toUpperCase();
+
+			for (int i = 1; i <= companyDto.getNoOfUsers(); i++) {
+				TrialUserDetails userDetails = new TrialUserDetails(null, userName + i, userEmail + i + "@watsoo.com",
+						null, true, UserType.USER.name(), new UserData(companyDto.getCreatedBy()), new Date(), null,
+						null, null);
+
+				trialUserDetailListForSave.add(userDetails);
+			}
+
+			TrialCompanyDto companySaveResponseDto = companyRepository.save(companyToSave).convertToCompanyDto();
+
+			for (TrialUserDetails trialUserDetails : trialUserDetailListForSave) {
+				trialUserDetails.setCompanyId(new TrialCompany(companySaveResponseDto.getId()));
+			}
+
+			trialUserDetailsRepository.saveAll(trialUserDetailListForSave);
+
+			return new Response<>(HttpStatus.CREATED.value(), "Trial company created succefully",
+					companySaveResponseDto);
+
+		} catch (Exception e) {
+			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+		}
 	}
 
 }

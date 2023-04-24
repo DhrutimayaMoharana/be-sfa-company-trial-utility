@@ -13,13 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.watsoo.sfa.trial.dto.TrialCompanyDto;
+import com.watsoo.sfa.trial.dto.TrialCompanyRequestDto;
 import com.watsoo.sfa.trial.dto.Response;
 import com.watsoo.sfa.trial.service.TrailCompanyService;
+
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("company")
-public class CompanyController {
+public class TrialCompanyController {
 
 	@Autowired
 	private TrailCompanyService companyService;
@@ -47,6 +51,20 @@ public class CompanyController {
 			@RequestParam(required = false, defaultValue = "0") int pageSize,
 			@RequestBody(required = false) TrialCompanyDto companyDto) {
 		Response<?> respone = companyService.getAllCompany(pageNo, pageSize, companyDto);
+		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
+	}
+	
+	@ApiOperation("Add and Assign Trial company to client email, password and identifier generated automatically!")
+	@PostMapping("v2/trialcompanyAdd")
+	public ResponseEntity<?> addTrialCompanyV1(@RequestBody TrialCompanyRequestDto companyDto) {
+		Response<?> respone = companyService.addTrialCompanyV1(companyDto);
+		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
+	}
+	
+	@ApiOperation("Add Trial company email and identifier generated automatically!")
+	@PostMapping("v3/trialcompanyAdd")
+	public ResponseEntity<?> addTrialCompanyV2(@RequestBody TrialCompanyRequestDto companyDto) {
+		Response<?> respone = companyService.addTrialCompanyV2(companyDto);
 		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
 	}
 

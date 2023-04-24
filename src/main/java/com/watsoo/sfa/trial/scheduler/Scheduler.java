@@ -35,7 +35,7 @@ public class Scheduler {
 	@Autowired
 	private EmailService emailService;
 
-	@Scheduled(cron = "00 00 18 * * *", zone = "UTC")
+	@Scheduled(cron = "00 15 02 * * *", zone = "UTC")
 	public void sendCompanyCredentialsExpiry() throws Exception {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String expiryDate = dateFormat.format(new Date()); // "2023-04-11"; //
@@ -77,16 +77,26 @@ public class Scheduler {
 				String[] toEmail = { transaction.getClientEmail() };
 				SendEmailRequest emailRequest = new SendEmailRequest();
 				emailRequest.setToEmailIds(toEmail);
-				emailRequest.setSubject("Trail Credentials Expired");
+				emailRequest.setSubject("Your Trial Has Ended!");
 
 				StringBuilder sb = new StringBuilder();
 				sb.append("<html><body>");
+				sb.append("<h1>Free Trial Ended! Get Pro Subscription Now!</h1>");
 				sb.append("<p>Dear " + transaction.getCompanyName() + ",</p>"
-						+ "<p>This mail is to inform you that your trail is expired today.</p>");
+						+ "<p>We hope you have enjoyed using our SFA Software in the trial period and have benefitted from the features."
+						+ "<br>"
+						+ "Unfortunately, your free trial period has now ended. Please do not stop using our tool and take advantage of our Pro Plan features."
+						+ "<br>"
+						+ "With our Pro Plan, you'll have access to advanced analytics and collaboration features that can take your work to the next level."
+						+ "<br>"
+						+ "For more information on our Pro Plan, please revert to this email or contact us directly."
+						+ "<br>"
+						+ "Thank you for considering our Pro Plan and we look forward to continuing to help you get the most out of your work."
+						+ "</p>");
 
-				sb.append("<p>We kindly request you to take a full subscription of the application. \n" + "<br>"
-						+ "For more details contact with our sales team." + "<br>"
-						+ "Thank you for your co-operation.</p>");
+				sb.append("<p>Sincerely,"
+						+ "<br>"
+						+ "Team NYGGS!</p>");
 				sb.append("</body></html>");
 
 				emailRequest.setContent(sb.toString());

@@ -47,19 +47,31 @@ public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long
 			}
 
 			if ((companyDto.getCreatedBy() != null && companyDto.getCreatedBy().getName() != null
-					&& !companyDto.getCreatedBy().getName().isEmpty())) {
+					&& !companyDto.getCreatedBy().getName().isEmpty())
+					|| (companyDto.getCreatedBy() != null && companyDto.getCreatedBy().getId() != null
+							&& companyDto.getCreatedBy().getId() != 0)) {
 				Join<?, ?> joinUser = root.join("createdBy");
 				p1.getExpressions()
-						.add(cb.or(cb.like(joinUser.get("name"), "%" + companyDto.getCreatedBy().getName() + "%")));
+						.add(cb.or(cb.like(joinUser.get("name"), "%" + companyDto.getCreatedBy().getName() + "%"),
+								cb.equal(joinUser.get("id"), companyDto.getCreatedBy().getId())));
 			}
 
 			if ((companyDto.getUsedBy() != null && companyDto.getUsedBy().getName() != null
-					&& !companyDto.getUsedBy().getName().isEmpty())) {
+					&& !companyDto.getUsedBy().getName().isEmpty())
+					|| (companyDto.getUsedBy() != null && companyDto.getUsedBy().getId() != null
+							&& companyDto.getUsedBy().getId() != 0)) {
 				Join<?, ?> joinUser = root.join("usedBy");
 				p1.getExpressions()
-						.add(cb.or(cb.like(joinUser.get("name"), "%" + companyDto.getUsedBy().getName() + "%")));
+						.add(cb.or(cb.like(joinUser.get("name"), "%" + companyDto.getUsedBy().getName() + "%"),
+								cb.equal(joinUser.get("id"), companyDto.getUsedBy().getId())));
 			}
 
+//			if ((companyDto.getUsedBy() != null && companyDto.getUsedBy().getId() != null
+//					&& companyDto.getUsedBy().getId() != 0)) {
+//				Join<?, ?> joinUser = root.join("usedBy");
+//				p1.getExpressions()
+//						.add(cb.or(cb.equal(joinUser.get("id"), companyDto.getUsedBy().getId())));
+//			}
 			if (companyDto.getCreatedOn() != null) {
 
 				Date toDate = companyDto.getCreatedOn();
@@ -100,5 +112,11 @@ public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long
 
 	@Query(value = "select id from company where used_by=?1", nativeQuery = true)
 	List<Long> findByUsedBy(Long id);
+
+	@Query(value = "select * from company where used_by=?1", nativeQuery = true)
+	List<TrialCompany> getAllByUsedBy(Long usedBy);
+
+	@Query(value = "select * from company where created_by=?1", nativeQuery = true)
+	List<TrialCompany> getAllByCreatedBy(Long usedBy);
 
 }
