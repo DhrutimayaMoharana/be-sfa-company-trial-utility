@@ -364,6 +364,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 			}
 
 			Long countCompany = companyRepository.findMaxId();
+			countCompany = countCompany!=null?countCompany:0;
 
 			TrialCompany companyToSave = new TrialCompany();
 
