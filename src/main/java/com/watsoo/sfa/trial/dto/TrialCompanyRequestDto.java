@@ -6,15 +6,15 @@ public class TrialCompanyRequestDto {
 
 	private Long noOfUsers;
 
-	private String clientEmail;
-
-	private String clientName;
-
 	private Long createdBy;
 
-	private Long usedBy;
-
-	private Date expiryDate;
+//	private String clientEmail;
+//
+//	private String clientName;
+//
+//	private Long usedBy;
+//
+//	private Date expiryDate;
 
 	public TrialCompanyRequestDto() {
 		super();
@@ -29,44 +29,12 @@ public class TrialCompanyRequestDto {
 		this.noOfUsers = noOfUsers;
 	}
 
-	public String getClientEmail() {
-		return clientEmail;
-	}
-
-	public void setClientEmail(String clientEmail) {
-		this.clientEmail = clientEmail;
-	}
-
-	public String getClientName() {
-		return clientName;
-	}
-
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
-	}
-
 	public Long getCreatedBy() {
 		return createdBy;
 	}
 
 	public void setCreatedBy(Long createdBy) {
 		this.createdBy = createdBy;
-	}
-
-	public Long getUsedBy() {
-		return usedBy;
-	}
-
-	public void setUsedBy(Long usedBy) {
-		this.usedBy = usedBy;
-	}
-
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
 	}
 
 }

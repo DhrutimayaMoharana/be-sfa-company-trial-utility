@@ -15,7 +15,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.watsoo.sfa.trial.dto.TrialCompanyDto;
 import com.watsoo.sfa.trial.model.TrialCompany;
-import com.watsoo.sfa.trial.model.UserData;
 
 public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long> {
 
@@ -84,7 +83,7 @@ public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long
 				toDate = c.getTime();
 				p1.getExpressions().add(cb.or(cb.between(root.get("createdOn"), fromDate, toDate)));
 			}
-
+//			cq.where(p1).orderBy(cb.asc(root.get("usedBy")));
 			return p1;
 
 		};
@@ -98,25 +97,31 @@ public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long
 
 	}
 
-	@Query(value = "select * from company where admin_email=?1 or user_email=?2", nativeQuery = true)
+	@Query(value = "select * from trial_company where admin_email=?1 or user_email=?2", nativeQuery = true)
 	List<TrialCompany> findByAdminEmailAndUserEmail(String adminEmail, String userEmail);
 
-	@Query(value = "select * from company where id<>?3 and (admin_email=?1 or user_email=?2)", nativeQuery = true)
+	@Query(value = "select * from trial_company where id<>?3 and (admin_email=?1 or user_email=?2)", nativeQuery = true)
 	List<TrialCompany> findByAdminEmailAndUserEmailAndId(String adminEmail, String userEmail, Long id);
 
-	@Query(value = "select * from company where date(expiry_date) = date(?1) and is_active=true", nativeQuery = true)
+	@Query(value = "select * from trial_company where date(expiry_date) = date(?1) and is_active=true", nativeQuery = true)
 	List<TrialCompany> findByExpiryDate(String expiryDate);
 
-	@Query(value = "select * from company where company_identifier=?1", nativeQuery = true)
+	@Query(value = "select * from trial_company where company_identifier=?1", nativeQuery = true)
 	TrialCompany findByCompanyIdentifier(String companyIdentifier);
 
-	@Query(value = "select id from company where used_by=?1", nativeQuery = true)
+	@Query(value = "select id from trial_company where used_by=?1", nativeQuery = true)
 	List<Long> findByUsedBy(Long id);
 
-	@Query(value = "select * from company where used_by=?1", nativeQuery = true)
+	@Query(value = "select * from trial_company where used_by=?1", nativeQuery = true)
 	List<TrialCompany> getAllByUsedBy(Long usedBy);
 
-	@Query(value = "select * from company where created_by=?1", nativeQuery = true)
+	@Query(value = "select * from trial_company where created_by=?1", nativeQuery = true)
 	List<TrialCompany> getAllByCreatedBy(Long usedBy);
+
+	@Query(value = "select * from trial_company where used_by is null  and is_active=true", nativeQuery = true)
+	List<TrialCompany> getAllNotUsedCompanys();
+
+	@Query(value = "select max(id) from trial_company", nativeQuery = true)
+	Long findMaxId();
 
 }

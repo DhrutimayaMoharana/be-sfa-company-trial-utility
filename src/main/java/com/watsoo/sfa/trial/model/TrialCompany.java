@@ -18,7 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.watsoo.sfa.trial.dto.TrialCompanyDto;
 
 @Entity
-@Table(name = "company")
+@Table(name = "trial_company")
 public class TrialCompany {
 
 	@Id

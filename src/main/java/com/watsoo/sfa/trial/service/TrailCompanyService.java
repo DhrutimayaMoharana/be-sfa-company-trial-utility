@@ -16,6 +16,6 @@ public interface TrailCompanyService {
 
 	Response<?> addTrialCompanyV1(TrialCompanyRequestDto companyDto);
 
-	Response<?> addTrialCompanyV2(TrialCompanyRequestDto companyDto);
+//	Response<?> addTrialCompanyV2(TrialCompanyRequestDto companyDto);
 
 }

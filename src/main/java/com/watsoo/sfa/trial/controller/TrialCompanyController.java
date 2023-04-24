@@ -54,18 +54,18 @@ public class TrialCompanyController {
 		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
 	}
 	
-	@ApiOperation("Add and Assign Trial company to client email, password and identifier generated automatically!")
+	@ApiOperation("Add Trial company email and identifier generated automatically!")
 	@PostMapping("v2/trialcompanyAdd")
 	public ResponseEntity<?> addTrialCompanyV1(@RequestBody TrialCompanyRequestDto companyDto) {
 		Response<?> respone = companyService.addTrialCompanyV1(companyDto);
 		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
 	}
 	
-	@ApiOperation("Add Trial company email and identifier generated automatically!")
-	@PostMapping("v3/trialcompanyAdd")
-	public ResponseEntity<?> addTrialCompanyV2(@RequestBody TrialCompanyRequestDto companyDto) {
-		Response<?> respone = companyService.addTrialCompanyV2(companyDto);
-		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
-	}
+//	@ApiOperation("Add and Assign Trial company to client email, password and identifier generated automatically!")
+//	@PostMapping("v3/trialcompanyAdd")
+//	public ResponseEntity<?> addTrialCompanyV2(@RequestBody TrialCompanyRequestDto companyDto) {
+//		Response<?> respone = companyService.addTrialCompanyV2(companyDto);
+//		return new ResponseEntity<>(respone, HttpStatus.valueOf(respone.getStatus()));
+//	}
 
 }
