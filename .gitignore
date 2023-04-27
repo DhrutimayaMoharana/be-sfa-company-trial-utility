@@ -11,3 +11,8 @@ target/
 *.log
 *.log
 *.class
+*.xml
+*.container
+*.component
+*.name
+.settings/.jsdtscope

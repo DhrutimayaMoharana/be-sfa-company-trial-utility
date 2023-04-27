@@ -13,6 +13,7 @@
 	<artifactId>be-sfa-trial-utility</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>be-sfa-trial-utility</name>
+	<packaging>war</packaging>
 	<description>Sfa Company Trail Utility</description>
 	<properties>
 		<java.version>1.8</java.version>

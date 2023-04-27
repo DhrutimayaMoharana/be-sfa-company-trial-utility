@@ -35,7 +35,7 @@ public class Scheduler {
 	@Autowired
 	private EmailService emailService;
 
-	@Scheduled(cron = "00 47 08 * * *", zone = "UTC")
+	@Scheduled(cron = "00 00 18 * * *", zone = "UTC")
 	public void sendCompanyCredentialsExpiry() throws Exception {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String expiryDate = dateFormat.format(new Date()); // "2023-04-11"; //
