@@ -103,7 +103,7 @@ public interface TrailCompanyRepository extends JpaRepository<TrialCompany, Long
 	@Query(value = "select * from trial_company where id<>?3 and (admin_email=?1 or user_email=?2)", nativeQuery = true)
 	List<TrialCompany> findByAdminEmailAndUserEmailAndId(String adminEmail, String userEmail, Long id);
 
-	@Query(value = "select * from trial_company where date(expiry_date) = date(?1) and is_active=true", nativeQuery = true)
+	@Query(value = "select * from trial_company where date(expiry_date) <= date(?1) and is_active=true", nativeQuery = true)
 	List<TrialCompany> findByExpiryDate(String expiryDate);
 
 	@Query(value = "select * from trial_company where company_identifier=?1", nativeQuery = true)
