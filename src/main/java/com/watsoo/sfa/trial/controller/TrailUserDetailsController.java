@@ -24,7 +24,7 @@ public class TrailUserDetailsController {
 	private TrialUserDetailsService trialUserDetailsService;
 
 	@PostMapping("v1/login-trial-user")
-	public ResponseEntity<?> userPermission(@RequestBody LoginRequestDto loginRequestDto) {
+	public ResponseEntity<?> userLogin(@RequestBody LoginRequestDto loginRequestDto) {
 		LoginResponseDto respone = trialUserDetailsService.trialUserLogin(loginRequestDto);
 		return new ResponseEntity<>(respone, HttpStatus.OK);
 	}

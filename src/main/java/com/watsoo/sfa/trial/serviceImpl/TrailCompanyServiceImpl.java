@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.watsoo.sfa.trial.constant.Constant;
 import com.watsoo.sfa.trial.dto.Response;
 import com.watsoo.sfa.trial.dto.SendEmailRequest;
 import com.watsoo.sfa.trial.dto.TrialCompanyDto;
@@ -190,7 +191,6 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 							"Admin email or User email is already used by other company", null);
 				}
 
-
 				String adminPassword = GenerateRandomCode.randomString(8);
 				String userPassword = GenerateRandomCode.randomString(8);
 				companyUpdate.setUsedBy(new UserData(companyDto.getUsedBy().getId()));
@@ -234,7 +234,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 
 				trialCredentialSet(companyUpdate, transaction, trialUserDetailListUpdate);
 
-				return new Response<>(HttpStatus.OK.value(), "Company assigned successfully", companyDto);
+				return new Response<>(HttpStatus.OK.value(), "Company Added Successfully", companyDto);
 			} else {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid Input", null);
 			}
@@ -269,9 +269,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 			Pagination<List<?>> pagination = new Pagination<>();
 			Pageable pageRequest = Pageable.unpaged();
 			if (pageSize > 0) {
-				Sort sort = Sort.by(
-					    Sort.Order.asc("usedBy"),
-					    Sort.Order.desc("id"));
+				Sort sort = Sort.by(Sort.Order.asc("usedBy"), Sort.Order.desc("id"));
 				pageRequest = PageRequest.of(pageNo, pageSize, sort);
 			}
 			Page<TrialCompany> companyList = companyRepository.findAll(companyDto, pageRequest);
@@ -303,14 +301,15 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><body>");
-		sb.append("<h1>Thank You! You Free Trial Credentials are Here!</h1>");
-		sb.append("<p>Dear " + transaction.getCompanyName() + " ,</p>"
+		// sb.append("<h1>Thank You! You Free Trial Credentials are Here!</h1>");
+//		sb.append("<p>Dear " + transaction.getCompanyName() + " ,</p>"
+		sb.append("<p>    Greetings, </p>"
 				+ "<p>Thank you for showing your interest in NYGGS SFA! We are excited you are considering our platform for your business needs."
 				+ "<br>"
 				+ "To get you started with the free trial period, we have provided you with the following trial user/admin credentials:</p>");
 		sb.append("<table style='border: 2px solid black;'>");
 		sb.append(
-				"<tr><th style='padding:10px; text-align:center; border: 2px solid black; '>SL. NO.</th><th style='padding:10px; text-align:center; border: 2px solid black; '>User Type</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Email</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Password</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Expiry On</th></tr>");
+				"<tr><th style='padding:10px; text-align:center; border: 2px solid black; '>SL. NO.</th><th style='padding:10px; text-align:center; border: 2px solid black; '>User Type</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Email or UserName</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Password</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Company Identifier</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Expiry On</th></tr>");
 
 		int i = 1;
 		for (TrialUserDetails trialUserDetails : trialUserDetailListUpdate) {
@@ -323,6 +322,8 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 					+ trialUserDetails.getEmail() + "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
 					+ trialUserDetails.getPassword() + "</td>");
+			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>" + Constant.LOGIN_TOKEN
+					+ "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
 					+ company.getExpiryDate() + "</td>");
 			sb.append("</tr>");
@@ -332,6 +333,10 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 		sb.append("</table>");
 		sb.append(
 				"<p>We encourage you to take a few moments to explore the platform and get familiar with its features. If you have any questions or need assistance, please don’t hesitate to reach out to our support team.</p>");
+		sb.append("<p>Please click on the given link to login, .</p>");
+		sb.append("<p>Web URL : - https://sfa.nyggs.com/ .</p>");
+		sb.append(
+				"<p>Google Play store : - https://play.google.com/store/apps/details?id=com.watsoo.odreporting .</p>");
 		sb.append("<p>We look forward to working with you!" + "</p>" + "<p>Sincerely," + "<br>" + "Team NYGGS.</p>");
 		sb.append("</body></html>");
 
@@ -339,7 +344,6 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 		emailService.sendMail(emailRequest);
 
 	}
-
 
 	@Override
 	public Response<?> addTrialCompanyV1(TrialCompanyRequestDto companyDto) {
@@ -354,17 +358,22 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 			List<TrialCompany> allCompanyNotUsedByAnyone = companyRepository.getAllNotUsedCompanys();
 			Configuration getMinimumFreeTrialCompany = configurationRepository
 					.findByConfigurationKey("MIN_FREE_TRIAL_COMPANY");
-			if (allCompanyNotUsedByAnyone.size() >= Integer.parseInt(getMinimumFreeTrialCompany.getValue())) {
+			if (getMinimumFreeTrialCompany.getValue() != null
+					&& allCompanyNotUsedByAnyone.size() >= Integer.parseInt(getMinimumFreeTrialCompany.getValue())) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(),
 						"You are not allow to create more trial company.");
 			}
 			Configuration getMinimumTrailUser = configurationRepository.findByConfigurationKey("MIN_TRIAL_USER");
-			if (companyDto.getNoOfUsers() > Integer.parseInt(getMinimumTrailUser.getValue())) {
-				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Max 5 users allow for trial.");
+			if (companyDto.getNoOfUsers() > Integer
+					.parseInt(getMinimumTrailUser.getValue() != null ? getMinimumTrailUser.getValue()
+							: Constant.MINI_TRAIL_USERS)) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(),
+						"Max " + (getMinimumTrailUser.getValue() != null ? getMinimumTrailUser.getValue()
+								: Constant.MINI_TRAIL_USERS) + " users allow for trial.");
 			}
 
 			Long countCompany = companyRepository.findMaxId();
-			countCompany = countCompany!=null?countCompany:0;
+			countCompany = countCompany != null ? countCompany : 0;
 
 			TrialCompany companyToSave = new TrialCompany();
 
@@ -408,7 +417,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
 		}
 	}
-	
+
 //	@Override
 //	public Response<?> addTrialCompanyV2(TrialCompanyRequestDto companyDto) {
 //		try {

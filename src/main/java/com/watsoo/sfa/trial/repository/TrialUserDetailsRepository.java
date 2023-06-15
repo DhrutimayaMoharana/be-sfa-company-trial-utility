@@ -16,7 +16,7 @@ public interface TrialUserDetailsRepository extends JpaRepository<TrialUserDetai
 	@Query(value = "select * from trial_user_details where company_id in (?1)", nativeQuery = true)
 	List<TrialUserDetails> findByCompanyId(List<Long> companyIds);
 
-	@Query(value = "select * from trial_user_details where email=?1", nativeQuery = true)
+	@Query(value = "select * from trial_user_details where email=?1 or name =?1", nativeQuery = true)
 	TrialUserDetails getTrialUserDetailsByEmail(String email);
 
 }
