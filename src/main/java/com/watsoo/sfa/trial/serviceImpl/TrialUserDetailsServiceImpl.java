@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.tomcat.util.digester.ArrayStack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.watsoo.sfa.trial.constant.Constant;
 import com.watsoo.sfa.trial.dto.CompanyDto;
 import com.watsoo.sfa.trial.dto.LoginRequestDto;
 import com.watsoo.sfa.trial.dto.LoginResponseDto;
@@ -16,6 +18,7 @@ import com.watsoo.sfa.trial.dto.Response;
 import com.watsoo.sfa.trial.dto.TrialUserPermissionDto;
 import com.watsoo.sfa.trial.dto.UserDataDto;
 import com.watsoo.sfa.trial.dto.UserPermissionDto;
+import com.watsoo.sfa.trial.enums.UserType;
 import com.watsoo.sfa.trial.model.Transaction;
 import com.watsoo.sfa.trial.model.TrialUserDetails;
 import com.watsoo.sfa.trial.model.UserData;
@@ -71,7 +74,12 @@ public class TrialUserDetailsServiceImpl implements TrialUserDetailsService {
 		Optional<TrialUserDetails> findByTrialUsed = trialUserDetailsRepository.findById(id);
 
 		TrialUserPermissionDto userPermissionDto = new TrialUserPermissionDto(
-				findByTrialUsed.get().getCompanyId().getId());
+				findByTrialUsed.get().getUserType().equalsIgnoreCase(UserType.ADMIN.name())
+						? findByTrialUsed.get().getCompanyId().getId()
+						: null,
+				findByTrialUsed.get().getUserType().equalsIgnoreCase(UserType.USER.name())
+						? Arrays.asList(findByTrialUsed.get().getId())
+						: new ArrayList<>());
 
 		return new Response<>(HttpStatus.OK.value(), "Success", userPermissionDto);
 

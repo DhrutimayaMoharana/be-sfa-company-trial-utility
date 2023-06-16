@@ -1,8 +1,12 @@
 package com.watsoo.sfa.trial.dto;
 
+import java.util.List;
+
 public class TrialUserPermissionDto {
 
 	Long companyId;
+
+	List<Long> employeeList;
 
 	public TrialUserPermissionDto() {
 		super();
@@ -17,9 +21,18 @@ public class TrialUserPermissionDto {
 		this.companyId = companyId;
 	}
 
-	public TrialUserPermissionDto(Long companyId) {
+	public List<Long> getEmployeeList() {
+		return employeeList;
+	}
+
+	public void setEmployeeList(List<Long> employeeList) {
+		this.employeeList = employeeList;
+	}
+
+	public TrialUserPermissionDto(Long companyId, List<Long> employeeList) {
 		super();
 		this.companyId = companyId;
+		this.employeeList = employeeList;
 	}
 
 }

@@ -297,7 +297,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 
 		SendEmailRequest emailRequest = new SendEmailRequest();
 		emailRequest.setToEmailIds(toEmails);
-		emailRequest.setSubject("Thank you for Showing Your Interest in NYGGS SFA!");
+		emailRequest.setSubject("Trail credentials for Nyggs(SFA)");
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><body>");
@@ -309,7 +309,7 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 				+ "To get you started with the free trial period, we have provided you with the following trial user/admin credentials:</p>");
 		sb.append("<table style='border: 2px solid black;'>");
 		sb.append(
-				"<tr><th style='padding:10px; text-align:center; border: 2px solid black; '>SL. NO.</th><th style='padding:10px; text-align:center; border: 2px solid black; '>User Type</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Email or UserName</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Password</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Company Identifier</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Expiry On</th></tr>");
+				"<tr><th style='padding:10px; text-align:center; border: 2px solid black; '>SL. NO.</th><th style='padding:10px; text-align:center; border: 2px solid black; '>User Type</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Email or Employee Code</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Password</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Company Identifier</th><th style='padding:10px; text-align:center; border: 2px solid black; '>Expiry On</th></tr>");
 
 		int i = 1;
 		for (TrialUserDetails trialUserDetails : trialUserDetailListUpdate) {
@@ -322,10 +322,10 @@ public class TrailCompanyServiceImpl implements TrailCompanyService {
 					+ trialUserDetails.getEmail() + "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
 					+ trialUserDetails.getPassword() + "</td>");
-			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>" + Constant.LOGIN_TOKEN
-					+ "</td>");
 			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
-					+ company.getExpiryDate() + "</td>");
+					+ trialUserDetails.getCompanyId().getCompanyIdentifier() + "</td>");
+			sb.append("<td style='padding:10px; text-align:center; border: 2px solid black; '>"
+					+ new SimpleDateFormat("dd-MM-yyyy").format(company.getExpiryDate()) + "</td>");
 			sb.append("</tr>");
 			i++;
 		}

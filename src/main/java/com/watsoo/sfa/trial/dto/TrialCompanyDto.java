@@ -204,9 +204,32 @@ public class TrialCompanyDto {
 		this.trialsUserDetailsDto = trialsUserDetailsDto;
 	}
 
+	public TrialCompanyDto(Long id, String companyIdentifier, String adminEmail, String adminPassword, String userEmail,
+			String userPassword, UserDataDto usedBy, Date expiryDate, Boolean isActive, String token,
+			UserDataDto createdBy, Date createdOn, Long updatedBy, Date updatedOn,
+			TrialsUserDetailsDto trialsUserDetailsDto, String clientName) {
+		super();
+		this.id = id;
+		this.companyIdentifier = companyIdentifier;
+		this.adminEmail = adminEmail;
+		this.adminPassword = adminPassword;
+		this.userEmail = userEmail;
+		this.userPassword = userPassword;
+		this.usedBy = usedBy;
+		this.expiryDate = expiryDate;
+		this.isActive = isActive;
+		this.token = token;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+		this.trialsUserDetailsDto = trialsUserDetailsDto;
+		this.clientName = clientName;
+	}
+
 	public TrialCompany convertToCompany() {
-		return new TrialCompany(this.getId(), this.getCompanyIdentifier(), this.getAdminEmail(), this.getAdminPassword(),
-				this.getUserEmail(), this.getUserPassword(),
+		return new TrialCompany(this.getId(), this.getCompanyIdentifier(), this.getAdminEmail(),
+				this.getAdminPassword(), this.getUserEmail(), this.getUserPassword(),
 				this.getUsedBy() != null && this.getUsedBy().getId() != null ? new UserData(this.getUsedBy().getId())
 						: null,
 				this.getExpiryDate(), this.getIsActive() != null ? this.getIsActive() : true, this.getToken(),

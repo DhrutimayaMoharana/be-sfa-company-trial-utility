@@ -2,6 +2,7 @@ package com.watsoo.sfa.trial.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -69,6 +70,9 @@ public class TrialCompany {
 
 	@OneToMany(mappedBy = "companyId", targetEntity = TrialUserDetails.class)
 	private List<TrialUserDetails> trialUserDetails;
+
+	@OneToMany(mappedBy = "companyId", targetEntity = Transaction.class)
+	private List<Transaction> transactions;
 
 	public TrialCompany() {
 		super();
@@ -195,6 +199,14 @@ public class TrialCompany {
 		this.trialUserDetails = trialUserDetails;
 	}
 
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+
 	public TrialCompany(Long id, String companyIdentifier, String adminEmail, String adminPassword, String userEmail,
 			String userPassword, UserData usedBy, Date expiryDate, Boolean isActive, String token, UserData createdBy,
 			Date createdOn, Long updatedBy, Date updatedOn) {
@@ -220,15 +232,21 @@ public class TrialCompany {
 	}
 
 	public TrialCompanyDto convertToCompanyDto() {
-		return new TrialCompanyDto(this.getId(), this.getCompanyIdentifier(), this.getAdminEmail(), this.getAdminPassword(),
-				this.getUserEmail(), this.getUserPassword(),
+		return new TrialCompanyDto(this.getId(), this.getCompanyIdentifier(), this.getAdminEmail(),
+				this.getAdminPassword(), this.getUserEmail(), this.getUserPassword(),
 				this.getUsedBy() != null ? this.getUsedBy().convertToUserDataDto() : null, this.getExpiryDate(),
 				this.getIsActive(), this.getToken(),
 				this.getCreatedBy() != null ? this.getCreatedBy().convertToUserDataDto() : null, this.getCreatedOn(),
 				this.getUpdatedBy(), this.getUpdatedOn(),
 				this.getTrialUserDetails() != null
 						? new TrialUserDetails().convertToTrailsUserDto(this.getTrialUserDetails())
-						: null);
+						: null,
+				this.getTransactions() != null && this.getTransactions().size() > 0
+						&& this.getTransactions().stream().filter(Transaction::getIsActive).collect(Collectors.toList())
+								.size() > 0
+										? this.getTransactions().stream().filter(Transaction::getIsActive)
+												.collect(Collectors.toList()).get(0).getCompanyName()
+										: null);
 	}
 
 }
