@@ -15,6 +15,8 @@ public class LoginRequestDto {
 	@NotEmpty(message = "The password is required.")
 	private String password;
 
+	private String identifier;
+
 	public LoginRequestDto() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -40,6 +42,14 @@ public class LoginRequestDto {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 }

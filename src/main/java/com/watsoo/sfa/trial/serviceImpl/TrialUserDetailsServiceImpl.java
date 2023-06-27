@@ -39,8 +39,13 @@ public class TrialUserDetailsServiceImpl implements TrialUserDetailsService {
 	public LoginResponseDto trialUserLogin(LoginRequestDto loginRequestDto) {
 
 		if (loginRequestDto != null) {
+			
+			if(loginRequestDto.getIdentifier()==null || loginRequestDto.getIdentifier().isEmpty()) {
+				throw new RuntimeException("Invalid Identifier");
+			}
+			
 			TrialUserDetails userData = trialUserDetailsRepository
-					.getTrialUserDetailsByEmail(loginRequestDto.getEmail());
+					.getTrialUserDetailsByEmail(loginRequestDto.getEmail(),loginRequestDto.getIdentifier());
 			if (userData != null) {
 				if (userData.getPassword() != null && !userData.getPassword().isEmpty()
 						&& userData.getPassword().equals(loginRequestDto.getPassword())) {
